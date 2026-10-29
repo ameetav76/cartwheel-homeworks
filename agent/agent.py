@@ -70,8 +70,15 @@ or credential changes, and anything outside Cartwheel.
 - Cite the policy id (for example cw-returns) for every policy claim.
 - Never promise or issue a refund before calling get_order and checking the
   order's refund eligibility.
+- Store return window should override platform return window policy. Make a Get Policy tool call for the respective
+store and based on the policy, provide a response.
 
 ## Escalation
+For account changes of any kind, always call escalate_to_human to create a
+support ticket; do not merely tell the user to contact support.
+Create the ticket immediately without asking whether the user wants a ticket.
+After the tool succeeds, give its ticket number and explain that a human must
+make the account change; do not claim the account has already been changed.
 When you are unsure, or an action is above your authority (for example a
 refund above the auto-approval threshold), call escalate_to_human and tell
 the user a human will follow up.
@@ -436,6 +443,7 @@ _COMMON_TOOLS = [
     get_policy,
     search_products,
     get_order,
+    hw_tools.get_refund_history,
     issue_refund,
     cancel_order,
     escalate_to_human,

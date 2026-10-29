@@ -232,6 +232,26 @@ def set_order_status(conn: sqlite3.Connection, order_id: int, status: str) -> No
     conn.commit()
 
 
+def list_refunds_for_order(conn: sqlite3.Connection, order_id: int) -> list[dict[str, Any]]:
+    """Read recorded refund history, newest first. Caller must authorize the order."""
+    rows = conn.execute(
+        "SELECT id, order_id, amount_cents, reason, status, created_at "
+        "FROM refunds WHERE order_id = ? ORDER BY created_at DESC, id DESC",
+        (order_id,),
+    ).fetchall()
+    return [
+        {
+            "refund_id": row["id"],
+            "order_id": row["order_id"],
+            "amount_usd": row["amount_cents"] / 100,
+            "reason": row["reason"],
+            "status": row["status"],
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]
+
+
 def insert_refund(
     conn: sqlite3.Connection,
     *,
